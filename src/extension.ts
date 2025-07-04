@@ -11,37 +11,29 @@ import {
 
 import { parseTree, findNodeAtLocation } from 'jsonc-parser';
 
-/* ─────────────────────────────────────────────────────────────── */
-
 const LANGS = ['en', 'nb', 'nn'] as const;
 const GENERATED_BASE_PATH = 'app/i18n/generated';
 const LOCALES_BASE_PATH   = 'app/i18n/locales';
 const openCmd             = 'polyglot.openLocale';
 
-/** Return the (1-based) line containing a flattened key like "App.back". */
 function findKeyLine(file: string, flatKey: string): number | null {
   try {
     const text = fs.readFileSync(file, 'utf8');
     const root = parseTree(text);
     if (!root) return null;
 
-    // walk the JSON path ["App", "back", ...]
     const valueNode = findNodeAtLocation(root, flatKey.split('.'));
     if (!valueNode) return null;
 
-    // jump to the *property key* token, not the value string itself
     const propNode = valueNode.parent?.children?.[0] ?? valueNode;
     const offset   = propNode.offset;
 
-    // count how many line-breaks occur *before* this offset
     const line = text.slice(0, offset).split(/\r\n|\r|\n/).length;
-    return line;                       // already 1-based
+    return line;                       
   } catch {
     return null;
   }
 }
-
-/* ─────────── Extension entry-point (unchanged below) ─────────── */
 
 export function activate(ctx: vscode.ExtensionContext) {
 
