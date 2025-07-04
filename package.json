@@ -11,9 +11,11 @@
   ],
   "activationEvents": [
     "onLanguage:javascript",
-    "onLanguage:typescript"
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact"
   ],
-  "main": "./out/extension.js",
+  "main": "out/src/extension.js",
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -36,6 +38,7 @@
     "vscode-languageserver-textdocument": "^1.0.12"
   },
   "dependencies": {
+    "fast-glob": "^3.3.3",
     "vscode-languageclient": "^9.0.1"
   }
 }

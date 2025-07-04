@@ -8,11 +8,12 @@ import {
 } from 'vscode-languageclient/node';
 
 let client: LanguageClient;
+console.log('[EXT] Activating extension...');
 
 export function activate(context: vscode.ExtensionContext) {
   const serverModule = context.asAbsolutePath(
-    path.join('server', 'server.js') // compiled server output
-  );
+  	path.join('out', 'server', 'server.js') 
+	);
 
   const serverOptions: ServerOptions = {
     run:   { module: serverModule, transport: TransportKind.ipc },
@@ -24,20 +25,23 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   const clientOptions: LanguageClientOptions = {
-    documentSelector: [
-      { scheme: 'file', language: 'javascript' },
-      { scheme: 'file', language: 'typescript' },
-    ],
-  };
+  documentSelector: [
+    { scheme: 'file', language: 'javascript' },
+    { scheme: 'file', language: 'typescript' },
+    { scheme: 'file', language: 'javascriptreact' }, 
+    { scheme: 'file', language: 'typescriptreact' }, 
+  ],
+};
 
   client = new LanguageClient(
-    'translationHover',
-    'Translation Hover Helper',
+    'polyglot-lsp',
+    'Polyglot Language Server',
     serverOptions,
     clientOptions
   );
 
   client.start();
+  console.log('[EXT] Language client started');
 }
 
 export function deactivate(): Thenable<void> | undefined {
