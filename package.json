@@ -1,13 +1,26 @@
 {
   "name": "polyglot-lsp",
-  "displayName": "PolyglotLSP",
-  "description": "Localization helper",
-  "version": "0.0.1",
+  "displayName": "Polyglot LSP",
+  "description": "A VS Code extension that brings localization support to the Unimicro app.",
+  "version": "0.1.0",
+  "publisher": "polyglot-lsp",
   "engines": {
     "vscode": "^1.101.0"
   },
   "categories": [
+    "Programming Languages",
     "Other"
+  ],
+  "keywords": [
+    "i18n",
+    "internationalization",
+    "localization",
+    "translations",
+    "lsp",
+    "language-server",
+    "javascript",
+    "typescript",
+    "react"
   ],
   "activationEvents": [
     "onLanguage:javascript",
@@ -16,6 +29,51 @@
     "onLanguage:typescriptreact"
   ],
   "main": "out/src/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Polyglot LSP",
+      "properties": {
+        "polyglotLsp.languages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["en", "nb", "nn"],
+          "description": "Language codes to support for translations"
+        },
+        "polyglotLsp.generatedPath": {
+          "type": "string",
+          "default": "app/i18n/generated",
+          "description": "Path to generated translation files relative to workspace root"
+        },
+        "polyglotLsp.localesPath": {
+          "type": "string",
+          "default": "app/i18n/locales",
+          "description": "Path to editable locale files relative to workspace root"
+        },
+        "polyglotLsp.translationFileName": {
+          "type": "string",
+          "default": "translations.json",
+          "description": "Name of the translation file in each language directory"
+        },
+        "polyglotLsp.enableHover": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable hover tooltips showing translations"
+        },
+        "polyglotLsp.enableCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable code completion for translation keys"
+        },
+        "polyglotLsp.enableGoToDefinition": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable go-to-definition for translation keys (Cmd/Ctrl+Click)"
+        }
+      }
+    }
+  },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
@@ -24,6 +82,11 @@
     "lint": "eslint src",
     "test": "vscode-test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/polyglot-lsp.git"
+  },
+  "license": "MIT",
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",

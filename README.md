@@ -1,71 +1,116 @@
-# polyglot-lsp README
+# Polyglot LSP
 
-This is the README for your extension "polyglot-lsp". After writing up a brief description, we recommend including the following sections.
+A VS Code extension that brings localization support to the Unimicro app.
+
+## What It Does
+
+Polyglot LSP detects `t()` function calls in your code and provides:
+
+- **Hover Translations**: See all language translations when hovering over translation keys
+- **Go to Definition**: Cmd/Ctrl+click to jump directly to the translation source
+- **Quick Edit**: Click links in hover tooltips to go to definition
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### Hover Translations
+Hover over any `t('key')` call to see translations for all configured languages:
 
-For example if there is an image subfolder under your extension project workspace:
+```
+t('welcome.message')
+```
 
-\!\[feature X\]\(images/feature-x.png\)
+Shows:
+- **en**: Welcome to our app! – [edit]
+- **nb**: Velkommen til appen vår! – [edit]  
+- **nn**: Velkomen til appen vår! – [edit]
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### Go to Definition
+Cmd/Ctrl+click on any translation key to jump to its definition in the source translation file.
 
-## Requirements
+## Setup
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### 1. Install the Extension
+Build Polyglot LSP from source.
 
-## Extension Settings
+### 2. Project Structure
+The extension expects your translation files to follow this structure:
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+```
+root/
+├── app/i18n/
+│   ├── generated/          # Generated flat translation files
+│   │   ├── en/
+│   │   │   └── translations.json
+│   │   ├── nb/
+│   │   │   └── translations.json
+│   │   └── nn/
+│   │       └── translations.json
+│   └── locales/           # Editable source translation files
+│       ├── en/
+│       │   └── translations.json
+│       ├── nb/
+│       │   └── translations.json
+│       └── nn/
+│           └── translations.json
+```
 
-For example:
+### 3. Configure Settings (Optional)
+Customize the extension behavior in VS Code settings:
 
-This extension contributes the following settings:
+```json
+{
+  "polyglotLsp.languages": ["en", "nb", "nn"],
+  "polyglotLsp.generatedPath": "app/i18n/generated",
+  "polyglotLsp.localesPath": "app/i18n/locales",
+  "polyglotLsp.translationFileName": "translations.json",
+  "polyglotLsp.enableHover": true,
+  "polyglotLsp.enableCompletion": true,
+  "polyglotLsp.enableGoToDefinition": true
+}
+```
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+## Usage Examples
 
-## Known Issues
+### Basic Translation Key
+```javascript
+// Hover over this to see all translations
+const greeting = t('user.welcome');
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+```
 
-## Release Notes
+## Configuration Options
 
-Users appreciate release notes as you update your extension.
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `languages` | `["en", "nb", "nn"]` | Language codes to support |
+| `generatedPath` | `"app/i18n/generated"` | Path to generated translation files |
+| `localesPath` | `"app/i18n/locales"` | Path to editable locale files |
+| `translationFileName` | `"translations.json"` | Name of translation files |
+| `enableHover` | `true` | Enable hover tooltips |
+| `enableGoToDefinition` | `true` | Enable go-to-definition |
 
-### 1.0.0
+## Development
 
-Initial release of ...
+### Building from Source
+```bash
+git clone https://github.com/your-username/polyglot-lsp.git
+cd polyglot-lsp
+npm install
+npm run compile
+```
 
-### 1.0.1
+### Debugging
+1. Open the project in VS Code
+2. Press F5 to start debugging
+3. Open a new VS Code window with the extension loaded
+4. Check the Debug Console for LSP logs
 
-Fixed issue #.
+## Future Implementation Ideas
 
-### 1.1.0
+### Planned Features
 
-Added features X, Y, and Z.
+**Fix code completion**
 
----
+**File Watching & Auto-Reload**
 
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Handle white labeled keys**

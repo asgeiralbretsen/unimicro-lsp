@@ -2,7 +2,8 @@ import {
   createConnection,
   TextDocuments,
   ProposedFeatures,
-  InitializeParams
+  InitializeParams,
+  ConfigurationRequest
 } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import * as fs from 'fs';
@@ -11,19 +12,48 @@ import * as path from 'path';
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
 
-const BASE_PATH = 'app/i18n/generated';
-const LANGS = ['en', 'nb', 'nn'] as const;
+interface PolyglotConfig {
+  languages: string[];
+  generatedPath: string;
+  localesPath: string;
+  translationFileName: string;
+}
 
-type Lang = typeof LANGS[number];
-const translations: Record<Lang, Record<string, string>> = {
-  en: {},
-  nb: {},
-  nn: {},
+let config: PolyglotConfig = {
+  languages: ['en', 'nb', 'nn'],
+  generatedPath: 'app/i18n/generated',
+  localesPath: 'app/i18n/locales',
+  translationFileName: 'translations.json'
 };
 
-connection.onInitialize((_params: InitializeParams) => {
+const translations: Record<string, Record<string, string>> = {};
+
+async function loadConfiguration(): Promise<void> {
   try {
-    const root = _params.rootUri!.replace('file://', '');
+    const result = await connection.sendRequest(ConfigurationRequest.type, {
+      items: [{ section: 'polyglotLsp' }]
+    });
+    
+    if (result && result[0]) {
+      const settings = result[0];
+      config = {
+        languages: settings.languages || ['en', 'nb', 'nn'],
+        generatedPath: settings.generatedPath || 'app/i18n/generated',
+        localesPath: settings.localesPath || 'app/i18n/locales',
+        translationFileName: settings.translationFileName || 'translations.json'
+      };
+    }
+  } catch (error) {
+    // Use default config if configuration request fails
+    connection.console.log('[LSP] Using default configuration');
+  }
+}
+
+connection.onInitialize(async (params: InitializeParams) => {
+  try {
+    await loadConfiguration();
+    
+    const root = params.rootUri!.replace('file://', '');
 
     const flatten = (obj: any, prefix = ''): Record<string, string> =>
       Object.entries(obj).reduce((acc, [k, v]) => {
@@ -36,19 +66,27 @@ connection.onInitialize((_params: InitializeParams) => {
         return acc;
       }, {} as Record<string, string>);
 
-    LANGS.forEach((lang) => {
-      const fullPath = path.join(root, `${BASE_PATH}/${lang}/translations.json`);
+    let totalKeys = 0;
+    
+    for (const lang of config.languages) {
+      const fullPath = path.join(root, `${config.generatedPath}/${lang}/${config.translationFileName}`);
       try {
-        const raw = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
-        translations[lang] = flatten(raw);
+        if (fs.existsSync(fullPath)) {
+          const raw = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+          translations[lang] = flatten(raw);
+          totalKeys += Object.keys(translations[lang]).length;
+          connection.console.log(`[LSP] Loaded ${lang}: ${Object.keys(translations[lang]).length} keys`);
+        } else {
+          connection.console.log(`[LSP] No translation file found for ${lang}: ${fullPath}`);
+        }
       } catch (err) {
-        connection.console.error(`[LSP] Failed to load ${lang}: ${err}`);
+        connection.console.log(`[LSP] Failed to load ${lang}: ${err}`);
       }
-    });
+    }
 
-    connection.console.log(`[LSP] Loaded translation keys: ${Object.keys(translations.en).length}`);
+    connection.console.log(`[LSP] Total translation keys loaded: ${totalKeys}`);
   } catch (e) {
-    connection.console.error(`Cannot load translations: ${e}`);
+    connection.console.log(`[LSP] Initialization error: ${e}`);
   }
 
   return { capabilities: {} };
