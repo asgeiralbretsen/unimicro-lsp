@@ -11,7 +11,7 @@ import {
 
 import { parseTree, findNodeAtLocation } from 'jsonc-parser';
 
-interface PolyglotConfig {
+interface UniConfig {
   languages: string[];
   generatedPath: string;
   localesPath: string;
@@ -21,8 +21,8 @@ interface PolyglotConfig {
   enableGoToDefinition: boolean;
 }
 
-function getConfig(): PolyglotConfig {
-  const config = vscode.workspace.getConfiguration('polyglotLsp');
+function getConfig(): UniConfig {
+  const config = vscode.workspace.getConfiguration('uniLsp');
   return {
     languages: config.get('languages', ['en', 'nb', 'nn']),
     generatedPath: config.get('generatedPath', 'app/i18n/generated'),
@@ -146,11 +146,11 @@ export function activate(ctx: vscode.ExtensionContext) {
     ],
   };
 
-  const client = new LanguageClient('polyglot', 'Polyglot LSP', serverOpts, clientOpts);
+  const client = new LanguageClient('uni', 'Uni LSP', serverOpts, clientOpts);
   client.start();
   ctx.subscriptions.push(client);
 
-  const openCmd = 'polyglot.openLocale';
+  const openCmd = 'uni.openLocale';
   
   ctx.subscriptions.push(
     vscode.commands.registerCommand(openCmd,

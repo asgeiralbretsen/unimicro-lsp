@@ -1,6 +1,6 @@
 # Change Log
 
-All notable changes to the "polyglot-lsp" extension will be documented in this file.
+All notable changes to the "uni-lsp" extension will be documented in this file.
 
 ## [0.1.0] - 08/07/2025
 
@@ -13,13 +13,13 @@ All notable changes to the "polyglot-lsp" extension will be documented in this f
 - **Quick Edit Links**: Click links in hover tooltips to edit translations directly
 
 ### Configuration Options
-- `polyglotLsp.languages`: Array of language codes to support
-- `polyglotLsp.generatedPath`: Path to generated translation files
-- `polyglotLsp.localesPath`: Path to editable locale files
-- `polyglotLsp.translationFileName`: Name of translation files
-- `polyglotLsp.enableHover`: Enable/disable hover tooltips
-- `polyglotLsp.enableCompletion`: Enable/disable code completion
-- `polyglotLsp.enableGoToDefinition`: Enable/disable go-to-definition
+- `uniLsp.languages`: Array of language codes to support
+- `uniLsp.generatedPath`: Path to generated translation files
+- `uniLsp.localesPath`: Path to editable locale files
+- `uniLsp.translationFileName`: Name of translation files
+- `uniLsp.enableHover`: Enable/disable hover tooltips
+- `uniLsp.enableCompletion`: Enable/disable code completion
+- `uniLsp.enableGoToDefinition`: Enable/disable go-to-definition
 
 ### Technical Improvements
 - TypeScript compilation with strict mode

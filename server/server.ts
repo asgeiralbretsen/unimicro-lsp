@@ -12,14 +12,14 @@ import * as path from 'path';
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
 
-interface PolyglotConfig {
+interface UniConfig {
   languages: string[];
   generatedPath: string;
   localesPath: string;
   translationFileName: string;
 }
 
-let config: PolyglotConfig = {
+let config: UniConfig = {
   languages: ['en', 'nb', 'nn'],
   generatedPath: 'app/i18n/generated',
   localesPath: 'app/i18n/locales',
@@ -31,7 +31,7 @@ const translations: Record<string, Record<string, string>> = {};
 async function loadConfiguration(): Promise<void> {
   try {
     const result = await connection.sendRequest(ConfigurationRequest.type, {
-      items: [{ section: 'polyglotLsp' }]
+      items: [{ section: 'uniLsp' }]
     });
     
     if (result && result[0]) {

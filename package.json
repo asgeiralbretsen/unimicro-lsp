@@ -1,9 +1,9 @@
 {
-  "name": "polyglot-lsp",
-  "displayName": "Polyglot LSP",
+  "name": "uni-lsp",
+  "displayName": "Uni LSP",
   "description": "A VS Code extension that brings localization support to the Unimicro app.",
   "version": "0.1.0",
-  "publisher": "polyglot-lsp",
+  "publisher": "uni-lsp",
   "engines": {
     "vscode": "^1.101.0"
   },
@@ -31,9 +31,9 @@
   "main": "out/src/extension.js",
   "contributes": {
     "configuration": {
-      "title": "Polyglot LSP",
+      "title": "Uni LSP",
       "properties": {
-        "polyglotLsp.languages": {
+        "uniLsp.languages": {
           "type": "array",
           "items": {
             "type": "string"
@@ -41,32 +41,32 @@
           "default": ["en", "nb", "nn"],
           "description": "Language codes to support for translations"
         },
-        "polyglotLsp.generatedPath": {
+        "uniLsp.generatedPath": {
           "type": "string",
           "default": "app/i18n/generated",
           "description": "Path to generated translation files relative to workspace root"
         },
-        "polyglotLsp.localesPath": {
+        "uniLsp.localesPath": {
           "type": "string",
           "default": "app/i18n/locales",
           "description": "Path to editable locale files relative to workspace root"
         },
-        "polyglotLsp.translationFileName": {
+        "uniLsp.translationFileName": {
           "type": "string",
           "default": "translations.json",
           "description": "Name of the translation file in each language directory"
         },
-        "polyglotLsp.enableHover": {
+        "uniLsp.enableHover": {
           "type": "boolean",
           "default": true,
           "description": "Enable hover tooltips showing translations"
         },
-        "polyglotLsp.enableCompletion": {
+        "uniLsp.enableCompletion": {
           "type": "boolean",
           "default": true,
           "description": "Enable code completion for translation keys"
         },
-        "polyglotLsp.enableGoToDefinition": {
+        "uniLsp.enableGoToDefinition": {
           "type": "boolean",
           "default": true,
           "description": "Enable go-to-definition for translation keys (Cmd/Ctrl+Click)"
@@ -84,7 +84,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/polyglot-lsp.git"
+    "url": "https://github.com/your-username/uni-lsp.git"
   },
   "license": "MIT",
   "devDependencies": {

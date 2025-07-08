@@ -1,11 +1,11 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
 
-suite('Polyglot LSP Extension Test Suite', () => {
+suite('Uni LSP Extension Test Suite', () => {
   vscode.window.showInformationMessage('Start all tests.');
 
   test('Extension should be activated', async () => {
-    const extension = vscode.extensions.getExtension('polyglot-lsp');
+    const extension = vscode.extensions.getExtension('uni-lsp');
     assert.ok(extension, 'Extension should be available');
     
     if (!extension.isActive) {
@@ -15,7 +15,7 @@ suite('Polyglot LSP Extension Test Suite', () => {
   });
 
   test('Configuration should be available', async () => {
-    const config = vscode.workspace.getConfiguration('polyglotLsp');
+    const config = vscode.workspace.getConfiguration('uniLsp');
     assert.ok(config, 'Configuration should be available');
     
     const languages = config.get('languages', ['en', 'nb', 'nn']);

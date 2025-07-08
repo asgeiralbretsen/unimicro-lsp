@@ -1,10 +1,10 @@
-# Polyglot LSP
+# Uni LSP
 
 A VS Code extension that brings localization support to the Unimicro app.
 
 ## What It Does
 
-Polyglot LSP detects `t()` function calls in your code and provides:
+Uni LSP detects `t()` function calls in your code and provides:
 
 - **Hover Translations**: See all language translations when hovering over translation keys
 - **Go to Definition**: Cmd/Ctrl+click to jump directly to the translation source
@@ -30,7 +30,7 @@ Cmd/Ctrl+click on any translation key to jump to its definition in the source tr
 ## Setup
 
 ### 1. Install the Extension
-Build Polyglot LSP from source.
+Build Uni LSP from source.
 
 ### 2. Project Structure
 The extension expects your translation files to follow this structure:
@@ -59,13 +59,13 @@ Customize the extension behavior in VS Code settings:
 
 ```json
 {
-  "polyglotLsp.languages": ["en", "nb", "nn"],
-  "polyglotLsp.generatedPath": "app/i18n/generated",
-  "polyglotLsp.localesPath": "app/i18n/locales",
-  "polyglotLsp.translationFileName": "translations.json",
-  "polyglotLsp.enableHover": true,
-  "polyglotLsp.enableCompletion": true,
-  "polyglotLsp.enableGoToDefinition": true
+  "uniLsp.languages": ["en", "nb", "nn"],
+  "uniLsp.generatedPath": "app/i18n/generated",
+  "uniLsp.localesPath": "app/i18n/locales",
+  "uniLsp.translationFileName": "translations.json",
+  "uniLsp.enableHover": true,
+  "uniLsp.enableCompletion": true,
+  "uniLsp.enableGoToDefinition": true
 }
 ```
 
@@ -93,8 +93,8 @@ const greeting = t('user.welcome');
 
 ### Building from Source
 ```bash
-git clone https://github.com/your-username/polyglot-lsp.git
-cd polyglot-lsp
+git clone https://github.com/your-username/uni-lsp.git
+cd uni-lsp
 npm install
 npm run compile
 ```
