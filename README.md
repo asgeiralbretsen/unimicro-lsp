@@ -9,6 +9,8 @@ Uni LSP detects `t()` function calls in your code and provides:
 - **Hover Translations**: See all language translations when hovering over translation keys
 - **Go to Definition**: Cmd/Ctrl+click to jump directly to the translation source
 - **Quick Edit**: Click links in hover tooltips to go to definition of a specific language
+- **Automatic Updates**: Hover tooltips and completions update immediately when files change
+- **Manual Reload**: Use the command palette (`Cmd/Ctrl+Shift+P`) and search for "Uni LSP: Reload Translations"
 
 ## Features
 

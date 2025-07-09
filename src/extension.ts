@@ -21,6 +21,8 @@ interface UniConfig {
   enableGoToDefinition: boolean;
 }
 
+let client: LanguageClient | undefined;
+
 function getConfig(): UniConfig {
   const config = vscode.workspace.getConfiguration('uniLsp');
   return {
@@ -121,16 +123,7 @@ function getTranslationKeys(workspaceRoot: string): string[] {
   return [...new Set(keys)]; // Remove duplicates
 }
 
-export function activate(ctx: vscode.ExtensionContext) {
-  // Check if this workspace has the expected i18n structure
-  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-  if (!workspaceFolder || !hasI18nStructure(workspaceFolder.uri.fsPath)) {
-    // Don't activate the extension if no i18n structure is found
-    return;
-  }
-
-  const config = getConfig();
-
+async function createLanguageClient(ctx: vscode.ExtensionContext): Promise<LanguageClient> {
   const serverModule = ctx.asAbsolutePath(path.join('out', 'server', 'server.js'));
   const serverOpts: ServerOptions = {
     run  : { module: serverModule, transport: TransportKind.ipc },
@@ -147,8 +140,25 @@ export function activate(ctx: vscode.ExtensionContext) {
   };
 
   const client = new LanguageClient('uni', 'Uni LSP', serverOpts, clientOpts);
-  client.start();
-  ctx.subscriptions.push(client);
+  await client.start();
+  return client;
+}
+
+export function activate(ctx: vscode.ExtensionContext) {
+  // Check if this workspace has the expected i18n structure
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (!workspaceFolder || !hasI18nStructure(workspaceFolder.uri.fsPath)) {
+    // Don't activate the extension if no i18n structure is found
+    return;
+  }
+
+  const config = getConfig();
+
+  // Create and start the language client
+  createLanguageClient(ctx).then(langClient => {
+    client = langClient;
+    ctx.subscriptions.push(client);
+  });
 
   const openCmd = 'uni.openLocale';
   
@@ -165,6 +175,21 @@ export function activate(ctx: vscode.ExtensionContext) {
           // Gracefully handle errors without showing to user
         }
       })
+  );
+
+  // Add reload command
+  ctx.subscriptions.push(
+    vscode.commands.registerCommand('uni.reloadTranslations', async () => {
+      try {
+        if (client) {
+          // Send a custom notification to the server to reload translations
+          await client.sendNotification('uni/reloadTranslations');
+          vscode.window.showInformationMessage('Translations reloaded successfully');
+        }
+      } catch (error) {
+        vscode.window.showErrorMessage('Failed to reload translations');
+      }
+    })
   );
 
   // Hover Provider
@@ -326,6 +351,19 @@ export function activate(ctx: vscode.ExtensionContext) {
       )
     );
   }
+
+  // Watch for configuration changes
+  ctx.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration(event => {
+      if (event.affectsConfiguration('uniLsp')) {
+        vscode.window.showInformationMessage('Uni LSP configuration changed. Please reload the window for changes to take effect.');
+      }
+    })
+  );
 }
 
-export function deactivate() {}
+export function deactivate() {
+  if (client) {
+    return client.stop();
+  }
+}

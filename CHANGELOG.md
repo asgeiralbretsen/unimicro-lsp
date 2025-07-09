@@ -2,6 +2,12 @@
 
 All notable changes to the "uni-lsp" extension will be documented in this file.
 
+## [0.2.0] - 09/07/2025
+
+### Added
+- **Automatic Updates**: Hover tooltips and completions update immediately when files change
+- **Manual Reload**: Use the command palette (`Cmd/Ctrl+Shift+P`) and search for "Uni LSP: Reload Translations"
+
 ## [0.1.0] - 08/07/2025
 
 ### Added
