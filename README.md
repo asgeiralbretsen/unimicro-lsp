@@ -8,7 +8,7 @@ Uni LSP detects `t()` function calls in your code and provides:
 
 - **Hover Translations**: See all language translations when hovering over translation keys
 - **Go to Definition**: Cmd/Ctrl+click to jump directly to the translation source
-- **Quick Edit**: Click links in hover tooltips to go to definition
+- **Quick Edit**: Click links in hover tooltips to go to definition of a specific language
 
 ## Features
 
@@ -27,18 +27,19 @@ Shows:
 ### Go to Definition
 Cmd/Ctrl+click on any translation key to jump to its definition in the source translation file.
 
-## Setup
+## Installation
 
 ### 1. Install the Extension
-Build Uni LSP from source.
+Install the latest release from the releases tab in GitHub:
+https://github.com/asgeiralbretsen/unimicro-lsp/releases
 
 ### 2. Project Structure
-The extension expects your translation files to follow this structure:
+The extension expects your translation files to follow this structure (Unimicro App):
 
 ```
 root/
 ├── app/i18n/
-│   ├── generated/          # Generated flat translation files
+│   ├── generated/          #  Geneated white-labeled JSON
 │   │   ├── en/
 │   │   │   └── translations.json
 │   │   ├── nb/
@@ -69,15 +70,6 @@ Customize the extension behavior in VS Code settings:
 }
 ```
 
-## Usage Examples
-
-### Basic Translation Key
-```javascript
-// Hover over this to see all translations
-const greeting = t('user.welcome');
-
-```
-
 ## Configuration Options
 
 | Setting | Default | Description |
@@ -93,10 +85,13 @@ const greeting = t('user.welcome');
 
 ### Building from Source
 ```bash
-git clone https://github.com/your-username/uni-lsp.git
-cd uni-lsp
+git clone https://github.com/asgeiralbretsen/unimicro-lsp.git
+cd unimicro-lsp
 npm install
 npm run compile
+
+# New release
+vsce package
 ```
 
 ### Debugging
@@ -107,10 +102,6 @@ npm run compile
 
 ## Future Implementation Ideas
 
-### Planned Features
-
-**Fix code completion**
-
-**File Watching & Auto-Reload**
-
-**Handle white labeled keys**
+- Fix code completion (TS LSP should assist here when i18n is typed)
+- File Watching and Auto-Reload
+- Handle white labeled keys
