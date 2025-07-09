@@ -2,6 +2,7 @@
   "name": "uni-lsp",
   "displayName": "Uni LSP",
   "description": "A VS Code extension that brings localization support to the Unimicro app.",
+  "icon": "images/icon.png",
   "version": "0.1.0",
   "publisher": "uni-lsp",
   "engines": {
