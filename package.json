@@ -3,7 +3,7 @@
   "displayName": "Uni LSP",
   "description": "A VS Code extension that brings localization support to the Unimicro app.",
   "icon": "images/icon.png",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "uni-lsp",
   "engines": {
     "vscode": "^1.101.0"
@@ -29,7 +29,7 @@
     "onLanguage:javascriptreact",
     "onLanguage:typescriptreact"
   ],
-  "main": "out/src/extension.js",
+  "main": "out/extension.js",
   "contributes": {
     "configuration": {
       "title": "Uni LSP",
@@ -84,17 +84,25 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
+    "compile": "webpack --mode production",
+    "watch": "webpack --mode development --watch",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "package": "npm run compile && vsce package"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/your-username/uni-lsp.git"
   },
   "license": "MIT",
+  "dependencies": {
+    "fast-glob": "^3.3.3",
+    "jsonc-parser": "^3.3.1",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12"
+  },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
@@ -105,12 +113,9 @@
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.25.1",
     "typescript": "^5.8.3",
-    "vscode-languageserver": "^9.0.1",
-    "vscode-languageserver-textdocument": "^1.0.12"
-  },
-  "dependencies": {
-    "fast-glob": "^3.3.3",
-    "jsonc-parser": "^3.3.1",
-    "vscode-languageclient": "^9.0.1"
+    "ts-loader": "^9.5.1",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "@vscode/vsce": "^2.15.0"
   }
 }

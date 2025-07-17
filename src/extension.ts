@@ -38,18 +38,18 @@ function getConfig(): UniConfig {
 
 function hasI18nStructure(workspaceRoot: string): boolean {
   const config = getConfig();
-  
+
   try {
     // Check if at least one language has the expected structure
     for (const lang of config.languages) {
       const genPath = path.join(workspaceRoot, config.generatedPath, lang, config.translationFileName);
       const locPath = path.join(workspaceRoot, config.localesPath, lang, config.translationFileName);
-      
+
       if (fs.existsSync(genPath) || fs.existsSync(locPath)) {
         return true;
       }
     }
-    
+
     // Also check for common alternative structures
     const alternativePaths = [
       'src/i18n',
@@ -58,18 +58,18 @@ function hasI18nStructure(workspaceRoot: string): boolean {
       'translations',
       'lang'
     ];
-    
+
     for (const altPath of alternativePaths) {
       for (const lang of config.languages) {
         const genPath = path.join(workspaceRoot, altPath, lang, config.translationFileName);
         const locPath = path.join(workspaceRoot, altPath, lang, config.translationFileName);
-        
+
         if (fs.existsSync(genPath) || fs.existsSync(locPath)) {
           return true;
         }
       }
     }
-    
+
     return false;
   } catch (error) {
     // If we can't check the file system, assume it's not a relevant workspace
@@ -81,16 +81,16 @@ function findKeyLine(file: string, flatKey: string): number | null {
   try {
     const text = fs.readFileSync(file, 'utf8');
     const root = parseTree(text);
-    if (!root) {return null;}
+    if (!root) { return null; }
 
     const valueNode = findNodeAtLocation(root, flatKey.split('.'));
-    if (!valueNode) {return null;}
+    if (!valueNode) { return null; }
 
     const propNode = valueNode.parent?.children?.[0] ?? valueNode;
-    const offset   = propNode.offset;
+    const offset = propNode.offset;
 
     const line = text.slice(0, offset).split(/\r\n|\r|\n/).length;
-    return line;                       
+    return line;
   } catch {
     return null;
   }
@@ -99,44 +99,49 @@ function findKeyLine(file: string, flatKey: string): number | null {
 function getTranslationKeys(workspaceRoot: string): string[] {
   const config = getConfig();
   const keys: string[] = [];
-  
+
   try {
     for (const lang of config.languages) {
       const genFile = path.join(workspaceRoot, `${config.generatedPath}/${lang}/${config.translationFileName}`);
       if (fs.existsSync(genFile)) {
-        const flatten = (o: any, p=''): Record<string,string> =>
-          Object.entries(o).reduce((a,[k,v]) => {
+        const flatten = (o: any, p = ''): Record<string, string> =>
+          Object.entries(o).reduce((a, [k, v]) => {
             const f = p + k;
             return typeof v === 'string'
-              ? (a[f]=v,a)
+              ? (a[f] = v, a)
               : Object.assign(a, flatten(v, f + '.'));
-          }, {} as Record<string,string>);
-        
-        const translations = flatten(JSON.parse(fs.readFileSync(genFile,'utf8')));
+          }, {} as Record<string, string>);
+
+        const translations = flatten(JSON.parse(fs.readFileSync(genFile, 'utf8')));
         keys.push(...Object.keys(translations));
       }
     }
   } catch (error) {
     // Silently fail - this is expected when files don't exist
   }
-  
+
   return [...new Set(keys)]; // Remove duplicates
 }
 
 async function createLanguageClient(ctx: vscode.ExtensionContext): Promise<LanguageClient> {
-  const serverModule = ctx.asAbsolutePath(path.join('out', 'server', 'server.js'));
+  const serverModule = ctx.asAbsolutePath(path.join('out', 'server.js'));
   const serverOpts: ServerOptions = {
-    run  : { module: serverModule, transport: TransportKind.ipc },
-    debug: { module: serverModule, transport: TransportKind.ipc,
-             options: { execArgv: ['--nolazy', '--inspect=6009'] } },
+    run: { module: serverModule, transport: TransportKind.ipc },
+    debug: {
+      module: serverModule, transport: TransportKind.ipc,
+      options: { execArgv: ['--nolazy', '--inspect=6009'] }
+    },
   };
   const clientOpts: LanguageClientOptions = {
     documentSelector: [
-      { scheme: 'file', language: 'javascript'      },
-      { scheme: 'file', language: 'typescript'      },
+      { scheme: 'file', language: 'javascript' },
+      { scheme: 'file', language: 'typescript' },
       { scheme: 'file', language: 'javascriptreact' },
       { scheme: 'file', language: 'typescriptreact' }
     ],
+    synchronize: {
+      fileEvents: vscode.workspace.createFileSystemWatcher('**/*.json')
+    }
   };
 
   const client = new LanguageClient('uni', 'Uni LSP', serverOpts, clientOpts);
@@ -161,7 +166,7 @@ export function activate(ctx: vscode.ExtensionContext) {
   });
 
   const openCmd = 'uni.openLocale';
-  
+
   ctx.subscriptions.push(
     vscode.commands.registerCommand(openCmd,
       async (uriStr: string, line: number) => {
@@ -197,8 +202,8 @@ export function activate(ctx: vscode.ExtensionContext) {
     ctx.subscriptions.push(
       vscode.languages.registerHoverProvider(
         [
-          { scheme: 'file', language: 'javascript'      },
-          { scheme: 'file', language: 'typescript'      },
+          { scheme: 'file', language: 'javascript' },
+          { scheme: 'file', language: 'typescript' },
           { scheme: 'file', language: 'javascriptreact' },
           { scheme: 'file', language: 'typescriptreact' }
         ],
@@ -210,13 +215,13 @@ export function activate(ctx: vscode.ExtensionContext) {
               let m: RegExpExecArray | null;
 
               while ((m = callRe.exec(text))) {
-                const key   = m[1];
+                const key = m[1];
                 const start = m.index + m[0].indexOf(key);
-                const end   = start + key.length;
-                if (pos.character < start || pos.character > end) {continue;}
+                const end = start + key.length;
+                if (pos.character < start || pos.character > end) { continue; }
 
                 const ws = vscode.workspace.getWorkspaceFolder(doc.uri);
-                if (!ws) {return null;}
+                if (!ws) { return null; }
                 const root = ws.uri.fsPath;
 
                 const md = new vscode.MarkdownString(undefined, true);
@@ -226,22 +231,22 @@ export function activate(ctx: vscode.ExtensionContext) {
                   const genFile = path.join(root, `${config.generatedPath}/${lang}/${config.translationFileName}`);
                   let value: string | undefined;
                   try {
-                    const flatten = (o: any, p=''): Record<string,string> =>
-                      Object.entries(o).reduce((a,[k,v]) => {
+                    const flatten = (o: any, p = ''): Record<string, string> =>
+                      Object.entries(o).reduce((a, [k, v]) => {
                         const f = p + k;
                         return typeof v === 'string'
-                          ? (a[f]=v,a)
+                          ? (a[f] = v, a)
                           : Object.assign(a, flatten(v, f + '.'));
-                      }, {} as Record<string,string>);
-                    value = flatten(JSON.parse(fs.readFileSync(genFile,'utf8')))[key];
+                      }, {} as Record<string, string>);
+                    value = flatten(JSON.parse(fs.readFileSync(genFile, 'utf8')))[key];
                   } catch { /* ignore */ }
 
                   /* link to editable locale file */
                   const locFile = path.join(root, `${config.localesPath}/${lang}/${config.translationFileName}`);
                   const lineNum = findKeyLine(locFile, key) ?? 1;
 
-                  const args  = encodeURIComponent(JSON.stringify([vscode.Uri.file(locFile).toString(), lineNum]));
-                  const link  = `command:${openCmd}?${args}`;
+                  const args = encodeURIComponent(JSON.stringify([vscode.Uri.file(locFile).toString(), lineNum]));
+                  const link = `command:${openCmd}?${args}`;
 
                   md.appendMarkdown(`**${lang}**: ${value ?? '_missing_'} – [edit](${link})  \n`);
                 }
@@ -265,8 +270,8 @@ export function activate(ctx: vscode.ExtensionContext) {
     ctx.subscriptions.push(
       vscode.languages.registerCompletionItemProvider(
         [
-          { scheme: 'file', language: 'javascript'      },
-          { scheme: 'file', language: 'typescript'      },
+          { scheme: 'file', language: 'javascript' },
+          { scheme: 'file', language: 'typescript' },
           { scheme: 'file', language: 'javascriptreact' },
           { scheme: 'file', language: 'typescriptreact' }
         ],
@@ -275,15 +280,15 @@ export function activate(ctx: vscode.ExtensionContext) {
             try {
               const linePrefix = document.lineAt(position).text.substr(0, position.character);
               const match = linePrefix.match(/t\s*\(\s*['"]([^'"]*)$/);
-              
-              if (!match) {return [];}
+
+              if (!match) { return []; }
 
               const ws = vscode.workspace.getWorkspaceFolder(document.uri);
-              if (!ws) {return [];}
+              if (!ws) { return []; }
 
               const keys = getTranslationKeys(ws.uri.fsPath);
               const partialKey = match[1];
-              
+
               return keys
                 .filter(key => key.toLowerCase().includes(partialKey.toLowerCase()))
                 .map(key => {
@@ -307,8 +312,8 @@ export function activate(ctx: vscode.ExtensionContext) {
     ctx.subscriptions.push(
       vscode.languages.registerDefinitionProvider(
         [
-          { scheme: 'file', language: 'javascript'      },
-          { scheme: 'file', language: 'typescript'      },
+          { scheme: 'file', language: 'javascript' },
+          { scheme: 'file', language: 'typescript' },
           { scheme: 'file', language: 'javascriptreact' },
           { scheme: 'file', language: 'typescriptreact' }
         ],
@@ -320,13 +325,13 @@ export function activate(ctx: vscode.ExtensionContext) {
               let m: RegExpExecArray | null;
 
               while ((m = callRe.exec(text))) {
-                const key   = m[1];
+                const key = m[1];
                 const start = m.index + m[0].indexOf(key);
-                const end   = start + key.length;
-                if (position.character < start || position.character > end) {continue;}
+                const end = start + key.length;
+                if (position.character < start || position.character > end) { continue; }
 
                 const ws = vscode.workspace.getWorkspaceFolder(document.uri);
-                if (!ws) {return null;}
+                if (!ws) { return null; }
 
                 // Try to find the key in the first available language file
                 for (const lang of config.languages) {

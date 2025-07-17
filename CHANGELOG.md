@@ -2,6 +2,13 @@
 
 All notable changes to the "uni-lsp" extension will be documented in this file.
 
+## [0.2.1] - 09/07/2025
+
+### Fixed
+- **LSP Server Loading**: Fixed "Cannot find module 'vscode-languageserver/node'" error that was preventing the extension from starting properly
+- **Dependency Bundling**: Moved LSP dependencies to production dependencies and implemented webpack bundling to ensure all required modules are available at runtime
+- **Build System**: Switched from TypeScript compiler to webpack for proper bundling of server dependencies
+
 ## [0.2.0] - 09/07/2025
 
 ### Added
